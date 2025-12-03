@@ -1,16 +1,23 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 import { getRooms, getAttractions, getServices } from "./mockDb";
 
-// Extremely robust env var access to prevent browser crashes
+// Robust API Key Retrieval
 const getApiKey = (): string => {
     try {
-        // Check if 'process' exists globally (Node/Webpack/Parcel)
+        // 1. Try import.meta.env (Vite / Modern Standards)
+        // @ts-ignore
+        if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
+            // @ts-ignore
+            return import.meta.env.VITE_API_KEY;
+        }
+
+        // 2. Try process.env (Webpack / Node / Create React App)
         if (typeof process !== 'undefined' && process && process.env) {
             // @ts-ignore
             return process.env.API_KEY || '';
         }
     } catch (e) {
-        // Ignore any reference errors
+        console.warn("Environment access failed", e);
     }
     return '';
 }

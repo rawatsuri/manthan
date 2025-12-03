@@ -69,7 +69,7 @@ export const RoomsPage: React.FC = () => {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold font-serif">{room.title}</h3>
-                  <span className="text-gold-600 font-bold text-xl">${room.price}</span>
+                  <span className="text-gold-600 font-bold text-xl">₹{room.price.toLocaleString('en-IN')}</span>
                 </div>
                 <p className="text-slate-500 text-sm mb-6 line-clamp-2 h-10">{room.description}</p>
                 

@@ -88,20 +88,25 @@ export const BookingPage: React.FC = () => {
   };
 
   const handleNextStep = () => {
-    console.log("Next Clicked. Current Step:", step);
+    console.log("Processing Step:", step);
     
     if (step === 2) {
+        // Safety check: if somehow on step 2 without a room (e.g. reload), go back
+        if (!selectedRoom) {
+            setStep(1);
+            return;
+        }
+
         if (validateStep2()) {
             setStep(3);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo(0, 0); // Instant scroll for better reliability
         } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            // Add a small delay for the alert to ensure render cycle is done
-            setTimeout(() => alert("Please fix the errors marked in red."), 10);
+            window.scrollTo(0, 0);
+            setTimeout(() => alert("Please fix the highlighted errors before continuing."), 50);
         }
     } else {
         setStep(prev => prev + 1);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo(0, 0);
     }
   }
 
@@ -152,7 +157,7 @@ export const BookingPage: React.FC = () => {
       saveBooking(newBooking);
       setBookingId(newId);
       setStep(4);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo(0, 0);
   }
 
   const handleRazorpayPayment = () => {
@@ -204,7 +209,7 @@ export const BookingPage: React.FC = () => {
                    <motion.div 
                     key={room.id}
                     whileHover={{ scale: 1.01 }}
-                    onClick={() => { setSelectedRoom(room); setStep(2); window.scrollTo({top:0, behavior:'smooth'}); }}
+                    onClick={() => { setSelectedRoom(room); setStep(2); window.scrollTo(0, 0); }}
                     className="flex flex-col lg:flex-row border border-slate-100 cursor-pointer shadow-sm hover:shadow-xl transition-all group rounded-lg overflow-hidden"
                    >
                      <div className="w-full lg:w-96 h-64 bg-slate-200 overflow-hidden">
