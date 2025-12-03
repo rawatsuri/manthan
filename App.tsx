@@ -9,10 +9,13 @@ import { GalleryPage } from './pages/Gallery';
 import { ContactPage } from './pages/Contact';
 import { AdminPage } from './pages/Admin';
 import { DiningPage } from './pages/Dining';
+import { AboutPage } from './pages/About';
+import { ScrollToTop } from './components/ScrollToTop';
 
 const App: React.FC = () => {
   return (
     <HashRouter>
+      <ScrollToTop />
       <Routes>
         {/* Admin Routes - Isolated from public layout */}
         <Route path="/admin/*" element={<AdminPage />} />
@@ -22,6 +25,7 @@ const App: React.FC = () => {
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/booking" element={<BookingPage />} />
               <Route path="/rooms" element={<RoomsPage />} />
               <Route path="/dining" element={<DiningPage />} />

@@ -13,7 +13,7 @@ const INITIAL_ROOMS: Room[] = [
     type: RoomType.DELUXE,
     amenities: ['wifi', 'ac', 'tv', 'minibar', 'balcony'],
     images: [
-      'https://images.unsplash.com/photo-1571003123894-1ac16e790554?q=80&w=1000&auto=format&fit=crop', 
+      'https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1000&auto=format&fit=crop', 
       'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1000&auto=format&fit=crop'
     ],
     featured: true,
@@ -64,6 +64,36 @@ const INITIAL_ROOMS: Room[] = [
     ],
     featured: true,
   },
+  {
+    id: '5',
+    title: 'Royal Heritage Suite',
+    description: 'Inspired by Goan-Portuguese architecture, this suite features antique furniture and a private terrace.',
+    price: 22000,
+    capacity: 2,
+    size: 800,
+    bedType: 'King Poster',
+    type: RoomType.SUITE,
+    amenities: ['wifi', 'ac', 'tv', 'bathtub', 'terrace'],
+    images: [
+      'https://images.unsplash.com/photo-1595576508898-0ad5c879a061?q=80&w=1000&auto=format&fit=crop'
+    ],
+    featured: true,
+  },
+  {
+    id: '6',
+    title: 'Family Connecting Studio',
+    description: 'Two connecting rooms perfect for families, offering both privacy and togetherness.',
+    price: 15000,
+    capacity: 4,
+    size: 700,
+    bedType: '1 King, 2 Twins',
+    type: RoomType.STANDARD,
+    amenities: ['wifi', 'ac', 'tv', 'minibar'],
+    images: [
+      'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=1000&auto=format&fit=crop'
+    ],
+    featured: false,
+  }
 ];
 
 const INITIAL_ATTRACTIONS: Attraction[] = [
@@ -82,6 +112,30 @@ const INITIAL_ATTRACTIONS: Attraction[] = [
     distance: '2.0 km',
     description: 'A 16th-century fort offering panoramic views of the coastline.',
     image: 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?q=80&w=800&auto=format&fit=crop'
+  },
+  {
+    id: '3',
+    name: 'Dudhsagar Waterfalls',
+    category: 'Nature',
+    distance: '45 km',
+    description: 'A majestic four-tiered waterfall located on the Mandovi River. A must-visit for nature lovers.',
+    image: 'https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=800&auto=format&fit=crop'
+  },
+  {
+    id: '4',
+    name: 'Saturday Night Market',
+    category: 'Shopping',
+    distance: '5.0 km',
+    description: 'Vibrant market with live music, food stalls, and local handicrafts.',
+    image: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?q=80&w=800&auto=format&fit=crop'
+  },
+  {
+    id: '5',
+    name: 'Spice Plantation Tour',
+    category: 'Experience',
+    distance: '15 km',
+    description: 'Walk through aromatic plantations and learn about Indian spices.',
+    image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=800&auto=format&fit=crop'
   }
 ];
 
@@ -93,15 +147,31 @@ const INITIAL_SERVICES: Service[] = [
 ];
 
 const INITIAL_MENU: MenuItem[] = [
+  // Starters
   { id: '1', name: 'Paneer Tikka', description: 'Cottage cheese marinated in indian spices and grilled in tandoor.', price: 450, category: 'Starter', isVeg: true, image: 'https://images.unsplash.com/photo-1567188040706-fb8d89541d88?q=80&w=800' },
+  { id: '5', name: 'Chicken Malai Tikka', description: 'Creamy chargrilled chicken chunks.', price: 550, category: 'Starter', isVeg: false, image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=800' },
+  { id: '6', name: 'Crispy Calamari', description: 'Fried squid rings with garlic mayo.', price: 600, category: 'Starter', isVeg: false, image: 'https://images.unsplash.com/photo-1604909052743-94e838986d24?q=80&w=800' },
+  
+  // Main Course
   { id: '2', name: 'Butter Chicken', description: 'Classic chicken curry in a rich tomato and butter gravy.', price: 650, category: 'Main Course', isVeg: false, image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?q=80&w=800' },
   { id: '3', name: 'Dal Makhani', description: 'Slow cooked black lentils with kidney beans, butter and cream.', price: 400, category: 'Main Course', isVeg: true, image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=800' },
+  { id: '7', name: 'Goan Fish Curry', description: 'Fresh catch simmered in coconut milk and kokum.', price: 750, category: 'Main Course', isVeg: false, image: 'https://images.unsplash.com/photo-1626776420079-fa1878dd1700?q=80&w=800' },
+  { id: '8', name: 'Hyderabadi Biryani', description: 'Aromatic basmati rice cooked with spices and veggies.', price: 500, category: 'Main Course', isVeg: true, image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800' },
+
+  // Desserts
   { id: '4', name: 'Gulab Jamun', description: 'Deep fried milk solids dipped in rose flavored sugar syrup.', price: 250, category: 'Dessert', isVeg: true, image: 'https://images.unsplash.com/photo-1589119908995-c6837fa14848?q=80&w=800' },
+  { id: '9', name: 'Bebinca', description: 'Traditional Goan layered pudding.', price: 300, category: 'Dessert', isVeg: false, image: 'https://images.unsplash.com/photo-1514517220017-8ce97a34a7b6?q=80&w=800' },
+
+  // Beverages
+  { id: '10', name: 'Masala Chai', description: 'Indian spiced tea.', price: 150, category: 'Beverage', isVeg: true, image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?q=80&w=800' },
+  { id: '11', name: 'Fresh Lime Soda', description: 'Refreshing cooler.', price: 180, category: 'Beverage', isVeg: true, image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=800' },
+  { id: '12', name: 'Tropical Mocktail', description: 'Blend of pineapple, mango and coconut.', price: 350, category: 'Beverage', isVeg: true, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=800' }
 ];
 
 const INITIAL_PROMOS: PromoCode[] = [
   { id: '1', code: 'WELCOME20', discountPercent: 20, isActive: true },
   { id: '2', code: 'SUMMER10', discountPercent: 10, isActive: true },
+  { id: '3', code: 'MANTHAN30', discountPercent: 30, isActive: true },
 ];
 
 const INITIAL_GALLERY: GalleryItem[] = [
@@ -111,6 +181,10 @@ const INITIAL_GALLERY: GalleryItem[] = [
   { id: '4', title: 'Dining Area', category: 'Dining', url: 'https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?q=80&w=1000' },
   { id: '5', title: 'Royal Suite', category: 'Interior', url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1000' },
   { id: '6', title: 'Beach Access', category: 'Exterior', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000' },
+  { id: '7', title: 'Yoga Deck', category: 'Amenities', url: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?q=80&w=1000' },
+  { id: '8', title: 'Night Ambience', category: 'Exterior', url: 'https://images.unsplash.com/photo-1563911302283-d2bc129e7c1f?q=80&w=1000' },
+  { id: '9', title: 'Spa & Wellness', category: 'Amenities', url: 'https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=1000' },
+  { id: '10', title: 'Cocktail Bar', category: 'Dining', url: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?q=80&w=1000' }
 ];
 
 // Helper to manage local storage

@@ -11,19 +11,21 @@ export const DiningPage: React.FC = () => {
        {/* Hero */}
        <div className="relative h-[60vh] flex items-center justify-center text-center">
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?q=80&w=2000" alt="Dining" className="w-full h-full object-cover" />
+          <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2000" alt="Dining" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-slate-900/60" />
         </div>
         <div className="relative z-10 px-4">
           <span className="text-gold-500 uppercase tracking-[0.3em] text-sm font-bold mb-4 block">The Spice Route</span>
           <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6">Culinary Excellence</h1>
-          <p className="text-xl text-slate-200 font-light">A symphony of flavors from across India and the globe.</p>
+          <p className="text-xl text-slate-200 font-light max-w-2xl mx-auto">A symphony of flavors sourced from the coastal villages of Goa and the royal kitchens of India.</p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-24">
+      <div className="max-w-5xl mx-auto px-4 py-24">
          <div className="text-center mb-16">
-            <p className="text-slate-600 leading-relaxed text-lg">
+            <h2 className="text-4xl font-serif font-bold text-slate-900 mb-6">Our Menu</h2>
+            <div className="w-16 h-1 bg-gold-500 mx-auto rounded-full mb-8"></div>
+            <p className="text-slate-600 leading-relaxed text-lg max-w-3xl mx-auto">
                 Our award-winning chefs source the finest local ingredients to create dishes that are both authentic and innovative.
                 Whether you crave the spicy notes of the South or the rich gravies of the North, The Spice Route promises an unforgettable dining experience.
             </p>
@@ -34,10 +36,11 @@ export const DiningPage: React.FC = () => {
              if (items.length === 0) return null;
 
              return (
-                 <div key={category} className="mb-16">
-                     <h3 className="text-3xl font-serif font-bold text-slate-900 mb-8 border-b border-slate-200 pb-4 flex items-center gap-4">
-                         {category}
-                     </h3>
+                 <div key={category} className="mb-20">
+                     <div className="flex items-center gap-4 mb-10">
+                        <h3 className="text-3xl font-serif font-bold text-slate-900">{category}</h3>
+                        <div className="h-px flex-1 bg-slate-200"></div>
+                     </div>
                      <div className="grid md:grid-cols-2 gap-x-12 gap-y-10">
                          {items.map((item) => (
                              <motion.div 
@@ -47,17 +50,17 @@ export const DiningPage: React.FC = () => {
                                 viewport={{ once: true }}
                                 className="flex gap-4 group"
                              >
-                                 <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-full border-2 border-slate-100">
-                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                                 <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-full border-2 border-slate-100 shadow-sm relative">
+                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                  </div>
                                  <div className="flex-1">
-                                     <div className="flex justify-between items-baseline mb-1 border-b border-dashed border-slate-300 pb-1">
-                                         <h4 className="text-xl font-serif font-bold text-slate-800">{item.name}</h4>
-                                         <span className="text-gold-600 font-bold">₹{item.price}</span>
+                                     <div className="flex justify-between items-baseline mb-2 border-b border-dashed border-slate-300 pb-2">
+                                         <h4 className="text-xl font-serif font-bold text-slate-800 group-hover:text-gold-600 transition-colors">{item.name}</h4>
+                                         <span className="text-gold-600 font-bold whitespace-nowrap ml-4">₹{item.price}</span>
                                      </div>
                                      <div className="flex items-center gap-2 mb-2">
-                                        <div className={`w-2 h-2 rounded-full ${item.isVeg ? 'bg-green-500' : 'bg-red-500'}`} title={item.isVeg ? "Vegetarian" : "Non-Vegetarian"}/>
-                                        <p className="text-slate-500 text-sm italic">{item.description}</p>
+                                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.isVeg ? 'bg-green-500' : 'bg-red-500'}`} title={item.isVeg ? "Vegetarian" : "Non-Vegetarian"}/>
+                                        <p className="text-slate-500 text-sm italic line-clamp-2">{item.description}</p>
                                      </div>
                                  </div>
                              </motion.div>

@@ -37,7 +37,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
           <div>
             <p className="text-sm text-slate-500">Total Revenue</p>
-            <p className="text-2xl font-bold text-slate-800">${stats.totalRevenue.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-slate-800">₹{stats.totalRevenue.toLocaleString()}</p>
           </div>
         </div>
 

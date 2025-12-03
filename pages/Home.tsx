@@ -1,13 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ChevronLeft, ArrowRight, MapPin, Star, Wifi, Tv, Wind } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ArrowRight, MapPin, Star, Wifi, Tv, Wind, Coffee, ShieldCheck, UserCheck, Palmtree } from 'lucide-react';
 import { getRooms, getAttractions } from '../services/mockDb';
 
 const HERO_IMAGES = [
   "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80",
   "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80",
   "https://images.unsplash.com/photo-1571003123894-1ac16e790554?ixlib=rb-4.0.3&auto=format&fit=crop&w=2500&q=80"
+];
+
+const FOUNDERS = [
+  {
+    name: "Arjun Malhotra",
+    role: "Co-Founder & Managing Director",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
+    quote: "We wanted to create a sanctuary that honors Indian traditions while embracing modern luxury."
+  },
+  {
+    name: "Vikram Singh",
+    role: "Co-Founder & Head of Operations",
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400&auto=format&fit=crop",
+    quote: "Service is not just about fulfilling requests, it's about anticipating needs before they arise."
+  }
 ];
 
 export const Home: React.FC = () => {
@@ -20,6 +35,7 @@ export const Home: React.FC = () => {
   const today = new Date().toISOString().split('T')[0];
   const [checkIn, setCheckIn] = useState(today);
   const [checkOut, setCheckOut] = useState('');
+  const [guests, setGuests] = useState(2);
 
   // Hero Slider Logic
   useEffect(() => {
@@ -28,6 +44,15 @@ export const Home: React.FC = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  // Set checkout to next day when checkin changes
+  useEffect(() => {
+      if (checkIn && !checkOut) {
+          const d = new Date(checkIn);
+          d.setDate(d.getDate() + 1);
+          setCheckOut(d.toISOString().split('T')[0]);
+      }
+  }, [checkIn]);
 
   // Attraction Scroll Logic
   const scrollAttractions = (direction: 'left' | 'right') => {
@@ -41,7 +66,7 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="overflow-hidden bg-slate-50 font-sans">
+    <div className="overflow-x-hidden bg-slate-50 font-sans">
       {/* Dynamic Hero Section */}
       <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
         <AnimatePresence mode="popLayout">
@@ -102,7 +127,7 @@ export const Home: React.FC = () => {
         </div>
 
         {/* Slider Indicators */}
-        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
+        <div className="absolute bottom-32 md:bottom-12 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
           {HERO_IMAGES.map((_, idx) => (
             <button 
               key={idx}
@@ -113,11 +138,11 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Booking Bar - Fixed Responsiveness & Overlapping */}
-      <div className="relative z-30 -mt-20 md:-mt-24 px-4 mb-24 max-w-7xl mx-auto">
+      {/* Booking Bar - Fixed Z-Index & Overflow */}
+      <div className="relative z-50 -mt-20 md:-mt-24 px-4 mb-24 max-w-7xl mx-auto">
         <div className="bg-white rounded-sm shadow-2xl p-6 md:p-10 flex flex-col lg:flex-row gap-6 items-end border-t-4 border-gold-500">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 w-full">
-            <div className="border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-6">
+            <div className="border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-6 relative">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Check In</label>
                <input 
                   type="date" 
@@ -125,9 +150,10 @@ export const Home: React.FC = () => {
                   value={checkIn}
                   onChange={(e) => setCheckIn(e.target.value)}
                   className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer" 
+                  style={{ position: 'relative', zIndex: 60 }}
                />
             </div>
-            <div className="border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-6">
+            <div className="border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-6 relative">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Check Out</label>
                <input 
                   type="date" 
@@ -135,22 +161,136 @@ export const Home: React.FC = () => {
                   value={checkOut}
                   onChange={(e) => setCheckOut(e.target.value)}
                   className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer" 
+                  style={{ position: 'relative', zIndex: 60 }}
                />
             </div>
             <div className="pb-4 md:pb-0">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Guests</label>
-               <select className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent border-none p-0 focus:ring-0 cursor-pointer">
-                 <option>2 Adults</option>
-                 <option>1 Adult</option>
-                 <option>Family (2A + 2C)</option>
+               <select 
+                  value={guests}
+                  onChange={e => setGuests(parseInt(e.target.value))}
+                  className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent border-none p-0 focus:ring-0 cursor-pointer"
+               >
+                 <option value={2}>2 Adults</option>
+                 <option value={1}>1 Adult</option>
+                 <option value={3}>3 Adults</option>
+                 <option value={4}>4 Adults</option>
                </select>
             </div>
           </div>
-          <Link to="/booking" className="w-full lg:w-auto bg-slate-900 text-gold-500 px-12 py-5 hover:bg-slate-800 transition-colors text-center font-bold uppercase tracking-widest text-sm whitespace-nowrap shadow-lg">
+          <Link 
+            to={`/booking?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`}
+            className="w-full lg:w-auto bg-slate-900 text-gold-500 px-12 py-5 hover:bg-slate-800 transition-colors text-center font-bold uppercase tracking-widest text-sm whitespace-nowrap shadow-lg"
+          >
             Check Availability
           </Link>
         </div>
       </div>
+
+      {/* About / Founders Section */}
+      <section className="py-20 bg-white">
+         <div className="max-w-7xl mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
+               <div>
+                  <span className="text-gold-600 font-bold tracking-[0.2em] uppercase text-xs">Our Story</span>
+                  <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mt-3 mb-6">Born from a Vision</h2>
+                  <p className="text-slate-600 leading-relaxed text-lg mb-6">
+                    Manthan Resort isn't just a hotel; it's a culmination of a lifelong dream shared by two friends, 
+                    Arjun and Vikram. Their journey began twenty years ago with a simple promise: to build a sanctuary 
+                    that blends the warmth of Indian hospitality with the grandeur of world-class luxury.
+                  </p>
+                  <p className="text-slate-600 leading-relaxed text-lg">
+                    Nestled on the pristine coasts of Goa, Manthan stands as a testament to their dedication to perfection.
+                    Every stone, every fabric, and every flavor has been handpicked to ensure your stay is nothing short of magical.
+                  </p>
+               </div>
+               <div className="grid grid-cols-2 gap-4">
+                  <div className="mt-8">
+                     <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800" className="w-full h-64 object-cover rounded-sm shadow-lg" alt="Interior"/>
+                  </div>
+                  <div>
+                     <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=800" className="w-full h-64 object-cover rounded-sm shadow-lg" alt="Exterior"/>
+                  </div>
+               </div>
+            </div>
+
+            <h3 className="text-center text-3xl font-serif font-bold text-slate-900 mb-12">Meet the Visionaries</h3>
+            <div className="grid md:grid-cols-2 gap-12">
+               {FOUNDERS.map((founder, i) => (
+                 <div key={i} className="flex flex-col md:flex-row gap-6 items-center bg-slate-50 p-8 rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <img src={founder.image} alt={founder.name} className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md" />
+                    <div className="text-center md:text-left">
+                       <h4 className="text-xl font-bold text-slate-900">{founder.name}</h4>
+                       <span className="text-xs text-gold-600 font-bold uppercase tracking-wider block mb-3">{founder.role}</span>
+                       <p className="text-slate-500 italic text-sm">"{founder.quote}"</p>
+                    </div>
+                 </div>
+               ))}
+            </div>
+         </div>
+      </section>
+
+      {/* Why Choose Us - Amenities */}
+      <section className="py-20 bg-slate-900 text-white">
+         <div className="max-w-7xl mx-auto px-4">
+             <div className="text-center mb-16">
+                <span className="text-gold-500 font-bold tracking-[0.2em] uppercase text-xs">Experience More</span>
+                <h2 className="text-4xl md:text-5xl font-serif font-bold mt-3">Unmatched Amenities</h2>
+             </div>
+             
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                 <div className="p-6 border border-slate-800 rounded-lg hover:border-gold-500 transition-colors group">
+                    <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gold-500 group-hover:bg-gold-500 group-hover:text-slate-900 transition-colors">
+                       <Palmtree size={24} />
+                    </div>
+                    <h4 className="font-bold text-lg mb-2">Private Beach</h4>
+                    <p className="text-slate-400 text-xs">Exclusive access to pristine sands.</p>
+                 </div>
+                 <div className="p-6 border border-slate-800 rounded-lg hover:border-gold-500 transition-colors group">
+                    <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gold-500 group-hover:bg-gold-500 group-hover:text-slate-900 transition-colors">
+                       <UserCheck size={24} />
+                    </div>
+                    <h4 className="font-bold text-lg mb-2">24/7 Butler</h4>
+                    <p className="text-slate-400 text-xs">Personalized service at any hour.</p>
+                 </div>
+                 <div className="p-6 border border-slate-800 rounded-lg hover:border-gold-500 transition-colors group">
+                    <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gold-500 group-hover:bg-gold-500 group-hover:text-slate-900 transition-colors">
+                       <Coffee size={24} />
+                    </div>
+                    <h4 className="font-bold text-lg mb-2">Gourmet Dining</h4>
+                    <p className="text-slate-400 text-xs">Award-winning culinary experiences.</p>
+                 </div>
+                 <div className="p-6 border border-slate-800 rounded-lg hover:border-gold-500 transition-colors group">
+                    <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gold-500 group-hover:bg-gold-500 group-hover:text-slate-900 transition-colors">
+                       <ShieldCheck size={24} />
+                    </div>
+                    <h4 className="font-bold text-lg mb-2">Top Security</h4>
+                    <p className="text-slate-400 text-xs">Your safety is our priority.</p>
+                 </div>
+             </div>
+         </div>
+      </section>
+      
+      {/* Video Parallax Section */}
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+         <video 
+           autoPlay 
+           loop 
+           muted 
+           playsInline 
+           className="absolute inset-0 w-full h-full object-cover"
+           poster="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2000"
+         >
+             <source src="https://assets.mixkit.co/videos/preview/mixkit-waves-coming-to-the-beach-5016-large.mp4" type="video/mp4" />
+         </video>
+         <div className="absolute inset-0 bg-black/40" />
+         <div className="relative z-10 text-center px-4">
+             <h2 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6">Reconnect with Nature</h2>
+             <Link to="/gallery" className="inline-block border-2 border-white text-white px-8 py-3 font-bold uppercase tracking-widest hover:bg-white hover:text-slate-900 transition-colors">
+                 View Gallery
+             </Link>
+         </div>
+      </section>
 
       {/* Featured Rooms - Eye Catching Design */}
       <section className="py-20 bg-white">
@@ -169,7 +309,7 @@ export const Home: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 viewport={{ once: true }}
-                className="group relative h-[500px] overflow-hidden cursor-pointer"
+                className="group relative h-[500px] overflow-hidden cursor-pointer rounded-lg shadow-xl"
               >
                 {/* Background Image */}
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
@@ -177,7 +317,7 @@ export const Home: React.FC = () => {
                 </div>
                 
                 {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90 transition-opacity" />
 
                 {/* Content */}
                 <div className="absolute inset-0 p-8 flex flex-col justify-end text-white transform transition-transform duration-500">

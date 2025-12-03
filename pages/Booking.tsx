@@ -12,25 +12,40 @@ declare global {
 }
 
 export const BookingPage: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const rooms = getRooms();
+  const allPromos = getPromoCodes();
+  
+  // Helper for dates
+  const today = new Date().toISOString().split('T')[0];
+  const getTomorrow = (dateStr: string) => {
+      const d = new Date(dateStr);
+      d.setDate(d.getDate() + 1);
+      return d.toISOString().split('T')[0];
+  };
+
   const [step, setStep] = useState(1);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const today = new Date().toISOString().split('T')[0];
-  const [dates, setDates] = useState({ checkIn: today, checkOut: '' });
+  
+  // Initialize dates with defaults
+  const [dates, setDates] = useState({ checkIn: today, checkOut: getTomorrow(today) });
   const [guestDetails, setGuestDetails] = useState({ name: '', email: '', phone: '', guests: 1 });
+  
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null);
   const [bookingId, setBookingId] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'hotel' | null>(null);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  
-  const location = useLocation();
-  const navigate = useNavigate();
-  const rooms = getRooms();
-  const allPromos = getPromoCodes();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const roomId = params.get('room');
+    const paramCheckIn = params.get('checkIn');
+    const paramCheckOut = params.get('checkOut');
+    const paramGuests = params.get('guests');
+
+    // Load Room
     if (roomId) {
       const room = rooms.find(r => r.id === roomId);
       if (room) {
@@ -38,27 +53,49 @@ export const BookingPage: React.FC = () => {
         setStep(2); 
       }
     }
+
+    // Load Dates/Guests from URL if available
+    if (paramCheckIn) {
+        const validCheckIn = paramCheckIn >= today ? paramCheckIn : today;
+        const validCheckOut = paramCheckOut && paramCheckOut > validCheckIn ? paramCheckOut : getTomorrow(validCheckIn);
+        
+        setDates({
+            checkIn: validCheckIn,
+            checkOut: validCheckOut
+        });
+    }
+    if (paramGuests) {
+        setGuestDetails(prev => ({ ...prev, guests: parseInt(paramGuests) || 1 }));
+    }
   }, [location, rooms]);
+
+  // Handle Date Changes with Auto-checkout logic
+  const handleCheckInChange = (date: string) => {
+      if (!date) return;
+      const nextDayStr = getTomorrow(date);
+      setDates({ checkIn: date, checkOut: nextDayStr });
+      setErrors(prev => ({ ...prev, checkIn: '', checkOut: '' }));
+  };
 
   // Validation Logic
   const validateStep2 = () => {
     const newErrors: {[key: string]: string} = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^[6-9]\d{9}$/; // Basic Indian mobile regex
     
-    if (!dates.checkIn) newErrors.checkIn = "Check-in date required";
-    if (!dates.checkOut) newErrors.checkOut = "Check-out date required";
+    // Check required fields
+    if (!guestDetails.name.trim()) newErrors.name = "Full name is required";
+    if (!guestDetails.email.trim() || !guestDetails.email.includes('@')) newErrors.email = "Valid email is required";
+    if (!guestDetails.phone.trim() || guestDetails.phone.length < 10) newErrors.phone = "Valid 10-digit phone required";
+    
+    if (!dates.checkIn) newErrors.checkIn = "Check-in required";
+    if (!dates.checkOut) newErrors.checkOut = "Check-out required";
+    
     if (dates.checkIn && dates.checkOut && dates.checkOut <= dates.checkIn) {
-        newErrors.checkOut = "Check-out must be after check-in";
+         // Auto fix instead of error if possible, but alerting logic here
+         newErrors.checkOut = "Check-out must be after check-in";
     }
 
-    if (!guestDetails.name.trim()) newErrors.name = "Full name is required";
-    if (!emailRegex.test(guestDetails.email)) newErrors.email = "Invalid email address";
-    if (!phoneRegex.test(guestDetails.phone)) newErrors.phone = "Invalid 10-digit Indian mobile number";
-    
-    if (selectedRoom) {
-        if (guestDetails.guests < 1) newErrors.guests = "At least 1 guest required";
-        if (guestDetails.guests > selectedRoom.capacity) newErrors.guests = `Max capacity is ${selectedRoom.capacity}`;
+    if (selectedRoom && (guestDetails.guests > selectedRoom.capacity)) {
+        newErrors.guests = `Max capacity is ${selectedRoom.capacity}`;
     }
 
     setErrors(newErrors);
@@ -66,13 +103,22 @@ export const BookingPage: React.FC = () => {
   };
 
   const handleNextStep = () => {
-      if (step === 2) {
-          if (validateStep2()) {
-              setStep(3);
-          }
-      } else {
-          setStep(prev => prev + 1);
-      }
+    console.log("Next Step Clicked, Current Step:", step);
+    
+    if (step === 2) {
+        const isValid = validateStep2();
+        if (isValid) {
+            setStep(3);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            // Force scroll to top to see errors
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            alert("Please correct the errors highlighted in red.");
+        }
+    } else {
+        setStep(prev => prev + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   const handleApplyPromo = () => {
@@ -89,7 +135,8 @@ export const BookingPage: React.FC = () => {
     if (!selectedRoom || !dates.checkIn || !dates.checkOut) return 0;
     const start = new Date(dates.checkIn);
     const end = new Date(dates.checkOut);
-    const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24));
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     return Math.max(nights, 1) * selectedRoom.price;
   };
 
@@ -99,8 +146,8 @@ export const BookingPage: React.FC = () => {
 
   const handleRazorpayPayment = () => {
     setPaymentMethod('razorpay');
-    const mockRazorpay = window.confirm(`[RAZORPAY GATEWAY]\n\nSecurely Pay ₹${total.toLocaleString('en-IN')}?\n\n(Click OK for Success, Cancel for Failure)`);
-    if (mockRazorpay) {
+    const confirmed = window.confirm(`[RAZORPAY SIMULATION]\n\nMerchant: Manthan Resort\nAmount: ₹${total.toLocaleString('en-IN')}\n\nClick OK to simulate successful payment.`);
+    if (confirmed) {
         completeBooking('razorpay', 'paid');
     }
   };
@@ -134,6 +181,7 @@ export const BookingPage: React.FC = () => {
       saveBooking(newBooking);
       setBookingId(newId);
       setStep(4);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   const steps = [
@@ -144,7 +192,7 @@ export const BookingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4">
+    <div className="min-h-screen bg-slate-50 py-12 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
         
         {/* Progress Bar */}
@@ -174,10 +222,16 @@ export const BookingPage: React.FC = () => {
                    <motion.div 
                     key={room.id}
                     whileHover={{ scale: 1.01 }}
-                    onClick={() => { setSelectedRoom(room); setStep(2); }}
+                    onClick={() => { setSelectedRoom(room); setStep(2); window.scrollTo({top:0, behavior:'smooth'}); }}
                     className="flex flex-col lg:flex-row border border-slate-100 cursor-pointer shadow-sm hover:shadow-xl transition-all group rounded-lg overflow-hidden"
                    >
-                     <img src={room.images[0]} alt={room.title} className="w-full lg:w-96 h-64 object-cover" />
+                     <div className="w-full lg:w-96 h-64 bg-slate-200 overflow-hidden">
+                        <img 
+                          src={room.images?.[0] || 'https://via.placeholder.com/400x300?text=Room+Image'} 
+                          alt={room.title} 
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                        />
+                     </div>
                      <div className="p-6 flex-1 flex flex-col justify-between">
                        <div>
                          <div className="flex justify-between items-start mb-2">
@@ -213,27 +267,23 @@ export const BookingPage: React.FC = () => {
                 <div className="bg-slate-50 p-6 rounded-lg border border-slate-100">
                     <h3 className="font-bold text-slate-700 uppercase text-xs tracking-wider mb-4 border-b pb-2">Stay Dates</h3>
                     <div className="space-y-4">
-                        <div>
+                        <div className="relative">
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Check In</label>
                         <input 
                             type="date" 
                             min={today}
-                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.checkIn ? 'border-red-500' : 'border-slate-300'}`} 
+                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white relative z-20 cursor-pointer ${errors.checkIn ? 'border-red-500' : 'border-slate-300'}`} 
                             value={dates.checkIn}
-                            onChange={e => {
-                                setDates({...dates, checkIn: e.target.value, checkOut: ''});
-                                setErrors({...errors, checkIn: ''});
-                            }}
+                            onChange={e => handleCheckInChange(e.target.value)}
                         />
                         {errors.checkIn && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.checkIn}</span>}
                         </div>
-                        <div>
+                        <div className="relative">
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Check Out</label>
                         <input 
                             type="date" 
-                            min={dates.checkIn}
-                            disabled={!dates.checkIn}
-                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.checkOut ? 'border-red-500' : 'border-slate-300'}`}
+                            min={getTomorrow(dates.checkIn || today)}
+                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white relative z-20 cursor-pointer ${errors.checkOut ? 'border-red-500' : 'border-slate-300'}`}
                             value={dates.checkOut}
                             onChange={e => {
                                 setDates({...dates, checkOut: e.target.value});
@@ -251,7 +301,8 @@ export const BookingPage: React.FC = () => {
                             className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.guests ? 'border-red-500' : 'border-slate-300'}`}
                             value={guestDetails.guests}
                             onChange={e => {
-                                setGuestDetails({...guestDetails, guests: parseInt(e.target.value)});
+                                const val = parseInt(e.target.value);
+                                setGuestDetails({...guestDetails, guests: isNaN(val) ? 1 : val});
                                 setErrors({...errors, guests: ''});
                             }}
                         />

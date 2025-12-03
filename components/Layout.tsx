@@ -132,6 +132,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {/* Desktop Menu */}
             <div className="hidden md:flex space-x-8 items-center">
               <Link to="/" className="text-slate-600 hover:text-gold-600 font-medium transition-colors text-sm uppercase tracking-wider">Home</Link>
+              <Link to="/about" className="text-slate-600 hover:text-gold-600 font-medium transition-colors text-sm uppercase tracking-wider">About</Link>
               <Link to="/rooms" className="text-slate-600 hover:text-gold-600 font-medium transition-colors text-sm uppercase tracking-wider">Rooms</Link>
               <Link to="/dining" className="text-slate-600 hover:text-gold-600 font-medium transition-colors text-sm uppercase tracking-wider">Dining</Link>
               <Link to="/services" className="text-slate-600 hover:text-gold-600 font-medium transition-colors text-sm uppercase tracking-wider">Services</Link>
@@ -164,6 +165,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
               <div className="px-4 pt-4 pb-8 space-y-2 flex flex-col">
                 <Link to="/" onClick={() => setIsMenuOpen(false)} className="block px-3 py-3 text-base font-bold text-slate-700 border-b border-slate-50 hover:bg-slate-50">Home</Link>
+                <Link to="/about" onClick={() => setIsMenuOpen(false)} className="block px-3 py-3 text-base font-bold text-slate-700 border-b border-slate-50 hover:bg-slate-50">About</Link>
                 <Link to="/rooms" onClick={() => setIsMenuOpen(false)} className="block px-3 py-3 text-base font-bold text-slate-700 border-b border-slate-50 hover:bg-slate-50">Rooms</Link>
                 <Link to="/dining" onClick={() => setIsMenuOpen(false)} className="block px-3 py-3 text-base font-bold text-slate-700 border-b border-slate-50 hover:bg-slate-50">Dining</Link>
                 <Link to="/services" onClick={() => setIsMenuOpen(false)} className="block px-3 py-3 text-base font-bold text-slate-700 border-b border-slate-50 hover:bg-slate-50">Services</Link>
@@ -194,6 +196,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div>
             <h4 className="text-white font-semibold mb-6 uppercase tracking-wider text-xs">Quick Links</h4>
             <ul className="space-y-3 text-sm">
+              <li><Link to="/about" className="hover:text-gold-500 transition-colors">About Us</Link></li>
               <li><Link to="/rooms" className="hover:text-gold-500 transition-colors">Accommodations</Link></li>
               <li><Link to="/dining" className="hover:text-gold-500 transition-colors">Fine Dining</Link></li>
               <li><Link to="/services" className="hover:text-gold-500 transition-colors">Spa & Wellness</Link></li>

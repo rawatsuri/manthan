@@ -1,11 +1,14 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 import { getRooms, getAttractions, getServices } from "./mockDb";
 
-// Safely access env var to prevent crash in browser if process is not defined
+// Robustly access env var to prevent crash in browser if process is not defined
 const getApiKey = () => {
     try {
-        // @ts-ignore
-        return process.env.API_KEY || '';
+        if (typeof process !== 'undefined' && process.env) {
+             // @ts-ignore
+            return process.env.API_KEY || '';
+        }
+        return '';
     } catch (e) {
         return '';
     }
@@ -18,7 +21,7 @@ let chatSession: Chat | null = null;
 const initializeChat = async () => {
   if (chatSession) return chatSession;
   if (!API_KEY) {
-      console.warn("API Key missing for Gemini.");
+      console.warn("API Key missing or invalid. Chat features disabled.");
       return null;
   }
 
