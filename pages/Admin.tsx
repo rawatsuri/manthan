@@ -499,8 +499,8 @@ export const AdminPage: React.FC = () => {
                  <div className="w-20 h-20 bg-gold-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-gold-500/20">
                     <Lock size={32} className="text-slate-900" />
                  </div>
-                 <h2 className="text-3xl font-serif font-bold text-white mb-2">Admin Portal</h2>
-                 <p className="text-slate-300 mb-8 text-sm">Restricted Access • LuxeHaven Management</p>
+                 <h2 className="text-3xl font-serif font-bold text-white mb-2">Manthan Admin</h2>
+                 <p className="text-slate-300 mb-8 text-sm">Restricted Access • Management Portal</p>
                  
                  <div className="space-y-4">
                     <input 
@@ -525,7 +525,7 @@ export const AdminPage: React.FC = () => {
                     </Link>
                  </div>
             </div>
-            <p className="text-center text-slate-500 text-xs mt-6">© LuxeHaven Secure System</p>
+            <p className="text-center text-slate-500 text-xs mt-6">© Manthan Secure System</p>
         </div>
       </div>
     );
@@ -537,8 +537,8 @@ export const AdminPage: React.FC = () => {
       <aside className="w-72 bg-slate-900 text-white hidden md:flex flex-col flex-shrink-0">
         <div className="p-8">
           <h2 className="text-2xl font-serif font-bold tracking-tight text-white flex items-center gap-2">
-             <div className="w-8 h-8 bg-gold-500 rounded-sm flex items-center justify-center text-slate-900 text-sm font-bold">LH</div>
-             LuxeAdmin
+             <div className="w-8 h-8 bg-gold-500 rounded-sm flex items-center justify-center text-slate-900 text-sm font-bold">M</div>
+             Manthan
           </h2>
         </div>
         <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
@@ -576,7 +576,7 @@ export const AdminPage: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto h-full">
          <header className="bg-white border-b border-slate-200 p-4 md:p-6 sticky top-0 z-30 flex justify-between items-center shadow-sm">
-            <div className="md:hidden font-bold text-xl font-serif">LuxeAdmin</div>
+            <div className="md:hidden font-bold text-xl font-serif">Manthan</div>
             <div className="hidden md:block text-slate-500 text-sm">Welcome back, Administrator.</div>
             <div className="flex items-center gap-4">
               <Link to="/" target="_blank" className="text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-gold-600">View Site</Link>

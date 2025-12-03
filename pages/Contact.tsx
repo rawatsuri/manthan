@@ -41,21 +41,21 @@ export const ContactPage: React.FC = () => {
               <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-900"><Phone size={20}/></div>
               <div>
                 <p className="text-xs text-slate-500 uppercase font-bold">Phone</p>
-                <p className="text-lg font-serif">+1 (555) 123-4567</p>
+                <p className="text-lg font-serif">+91 98765 43210</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-900"><Mail size={20}/></div>
               <div>
                 <p className="text-xs text-slate-500 uppercase font-bold">Email</p>
-                <p className="text-lg font-serif">reservations@luxehaven.com</p>
+                <p className="text-lg font-serif">reservations@manthanresort.in</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-900"><MapPin size={20}/></div>
               <div>
                 <p className="text-xs text-slate-500 uppercase font-bold">Address</p>
-                <p className="text-lg font-serif">123 Paradise Road, Beverly Hills, CA</p>
+                <p className="text-lg font-serif">123 Paradise Road, Goa, India</p>
               </div>
             </div>
           </div>

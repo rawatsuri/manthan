@@ -11,7 +11,7 @@ interface LayoutProps {
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user'|'ai', text: string}[]>([
-    { role: 'ai', text: 'Namaste! I am Aurelius, your virtual concierge. How may I assist you today?' }
+    { role: 'ai', text: 'Namaste! I am Aurelius, your virtual concierge for Manthan Resort. How may I assist you today?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -124,7 +124,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Hotel size={28} />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-serif font-bold tracking-tight text-slate-900 leading-none">LuxeHaven</span>
+                <span className="text-2xl font-serif font-bold tracking-tight text-slate-900 leading-none">Manthan</span>
                 <span className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Resort & Spa</span>
               </div>
             </Link>
@@ -182,7 +182,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <footer className="bg-slate-950 text-slate-400 py-16 border-t-4 border-gold-500">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div>
-            <h3 className="text-white font-serif text-2xl mb-6">LuxeHaven</h3>
+            <h3 className="text-white font-serif text-2xl mb-6">Manthan</h3>
             <p className="text-sm leading-relaxed mb-6">Experience the pinnacle of Indian hospitality where modern luxury meets timeless tradition. Your sanctuary awaits.</p>
             <div className="flex gap-4">
                {/* Social placeholders */}
@@ -205,7 +205,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2"><div className="mt-1"><Hotel size={14}/></div> 123 Paradise Road, Goa, India</li>
               <li className="flex items-center gap-2"><div className=""><Utensils size={14}/></div> +91 98765 43210</li>
-              <li className="flex items-center gap-2"><div className=""><Send size={14}/></div> reservations@luxehaven.in</li>
+              <li className="flex items-center gap-2"><div className=""><Send size={14}/></div> reservations@manthanresort.in</li>
             </ul>
           </div>
           <div>
@@ -218,7 +218,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 mt-16 pt-8 border-t border-slate-900 text-center text-xs flex justify-between items-center text-slate-500">
-          <span>© {new Date().getFullYear()} LuxeHaven Resort. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Manthan Resort. All rights reserved.</span>
           <span>Made with ❤️ in India</span>
         </div>
       </footer>

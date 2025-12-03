@@ -1,7 +1,17 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 import { getRooms, getAttractions, getServices } from "./mockDb";
 
-const API_KEY = process.env.API_KEY || '';
+// Safely access env var to prevent crash in browser if process is not defined
+const getApiKey = () => {
+    try {
+        // @ts-ignore
+        return process.env.API_KEY || '';
+    } catch (e) {
+        return '';
+    }
+}
+
+const API_KEY = getApiKey();
 
 let chatSession: Chat | null = null;
 
@@ -15,12 +25,12 @@ const initializeChat = async () => {
   const ai = new GoogleGenAI({ apiKey: API_KEY });
   
   // Context Retrieval
-  const rooms = getRooms().map(r => `${r.title} ($${r.price})`).join(', ');
+  const rooms = getRooms().map(r => `${r.title} (₹${r.price})`).join(', ');
   const attractions = getAttractions().map(a => a.name).join(', ');
   const services = getServices().map(s => s.name).join(', ');
 
   const systemInstruction = `
-    You are 'Aurelius', the AI Concierge of LuxeHaven Resort. 
+    You are 'Aurelius', the AI Concierge of Manthan Resort. 
     Your tone is polite, sophisticated, and helpful.
     
     Here is our current data:

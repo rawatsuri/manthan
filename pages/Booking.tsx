@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Check, Calendar, User, CreditCard, Printer, ShieldCheck, ArrowLeft, Building2 } from 'lucide-react';
+import { Check, Calendar, User, CreditCard, Printer, ShieldCheck, ArrowLeft, Building2, AlertCircle } from 'lucide-react';
 import { getRooms, saveBooking, getPromoCodes } from '../services/mockDb';
 import { Room, Booking, PromoCode } from '../types';
 
@@ -14,12 +14,14 @@ declare global {
 export const BookingPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [dates, setDates] = useState({ checkIn: '', checkOut: '' });
+  const today = new Date().toISOString().split('T')[0];
+  const [dates, setDates] = useState({ checkIn: today, checkOut: '' });
   const [guestDetails, setGuestDetails] = useState({ name: '', email: '', phone: '', guests: 1 });
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null);
   const [bookingId, setBookingId] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'hotel' | null>(null);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
   
   const location = useLocation();
   const navigate = useNavigate();
@@ -38,12 +40,48 @@ export const BookingPage: React.FC = () => {
     }
   }, [location, rooms]);
 
+  // Validation Logic
+  const validateStep2 = () => {
+    const newErrors: {[key: string]: string} = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[6-9]\d{9}$/; // Basic Indian mobile regex
+    
+    if (!dates.checkIn) newErrors.checkIn = "Check-in date required";
+    if (!dates.checkOut) newErrors.checkOut = "Check-out date required";
+    if (dates.checkIn && dates.checkOut && dates.checkOut <= dates.checkIn) {
+        newErrors.checkOut = "Check-out must be after check-in";
+    }
+
+    if (!guestDetails.name.trim()) newErrors.name = "Full name is required";
+    if (!emailRegex.test(guestDetails.email)) newErrors.email = "Invalid email address";
+    if (!phoneRegex.test(guestDetails.phone)) newErrors.phone = "Invalid 10-digit Indian mobile number";
+    
+    if (selectedRoom) {
+        if (guestDetails.guests < 1) newErrors.guests = "At least 1 guest required";
+        if (guestDetails.guests > selectedRoom.capacity) newErrors.guests = `Max capacity is ${selectedRoom.capacity}`;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNextStep = () => {
+      if (step === 2) {
+          if (validateStep2()) {
+              setStep(3);
+          }
+      } else {
+          setStep(prev => prev + 1);
+      }
+  }
+
   const handleApplyPromo = () => {
     const code = allPromos.find(p => p.code === promoCode && p.isActive);
     if (code) {
       setAppliedPromo(code);
+      setErrors(prev => ({...prev, promo: ''}));
     } else {
-      alert('Invalid promo code');
+      setErrors(prev => ({...prev, promo: 'Invalid promo code'}));
     }
   };
 
@@ -61,10 +99,7 @@ export const BookingPage: React.FC = () => {
 
   const handleRazorpayPayment = () => {
     setPaymentMethod('razorpay');
-    
-    // Simulate Razorpay
     const mockRazorpay = window.confirm(`[RAZORPAY GATEWAY]\n\nSecurely Pay ₹${total.toLocaleString('en-IN')}?\n\n(Click OK for Success, Cancel for Failure)`);
-    
     if (mockRazorpay) {
         completeBooking('razorpay', 'paid');
     }
@@ -180,15 +215,47 @@ export const BookingPage: React.FC = () => {
                     <div className="space-y-4">
                         <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Check In</label>
-                        <input type="date" className="w-full p-3 border border-slate-300 rounded focus:border-gold-500 outline-none bg-white" 
-                            onChange={e => setDates({...dates, checkIn: e.target.value})}
+                        <input 
+                            type="date" 
+                            min={today}
+                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.checkIn ? 'border-red-500' : 'border-slate-300'}`} 
+                            value={dates.checkIn}
+                            onChange={e => {
+                                setDates({...dates, checkIn: e.target.value, checkOut: ''});
+                                setErrors({...errors, checkIn: ''});
+                            }}
                         />
+                        {errors.checkIn && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.checkIn}</span>}
                         </div>
                         <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Check Out</label>
-                        <input type="date" className="w-full p-3 border border-slate-300 rounded focus:border-gold-500 outline-none bg-white"
-                            onChange={e => setDates({...dates, checkOut: e.target.value})}
+                        <input 
+                            type="date" 
+                            min={dates.checkIn}
+                            disabled={!dates.checkIn}
+                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.checkOut ? 'border-red-500' : 'border-slate-300'}`}
+                            value={dates.checkOut}
+                            onChange={e => {
+                                setDates({...dates, checkOut: e.target.value});
+                                setErrors({...errors, checkOut: ''});
+                            }}
                         />
+                         {errors.checkOut && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.checkOut}</span>}
+                        </div>
+                        <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Number of Guests</label>
+                        <input 
+                            type="number"
+                            min="1"
+                            max={selectedRoom?.capacity || 4}
+                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.guests ? 'border-red-500' : 'border-slate-300'}`}
+                            value={guestDetails.guests}
+                            onChange={e => {
+                                setGuestDetails({...guestDetails, guests: parseInt(e.target.value)});
+                                setErrors({...errors, guests: ''});
+                            }}
+                        />
+                        {errors.guests && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.guests}</span>}
                         </div>
                     </div>
                 </div>
@@ -198,33 +265,45 @@ export const BookingPage: React.FC = () => {
                     <div className="space-y-4">
                         <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Full Name</label>
-                        <input type="text" className="w-full p-3 border border-slate-300 rounded focus:border-gold-500 outline-none bg-white"
-                            value={guestDetails.name} onChange={e => setGuestDetails({...guestDetails, name: e.target.value})}
-                            placeholder="Aditya Kumar"
+                        <input type="text" className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.name ? 'border-red-500' : 'border-slate-300'}`}
+                            value={guestDetails.name} onChange={e => {
+                                setGuestDetails({...guestDetails, name: e.target.value});
+                                setErrors({...errors, name: ''});
+                            }}
+                            placeholder="e.g. Aditya Kumar"
                         />
+                         {errors.name && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.name}</span>}
                         </div>
                         <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Email</label>
-                        <input type="email" className="w-full p-3 border border-slate-300 rounded focus:border-gold-500 outline-none bg-white"
-                            value={guestDetails.email} onChange={e => setGuestDetails({...guestDetails, email: e.target.value})}
-                            placeholder="aditya@example.com"
+                        <input type="email" className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.email ? 'border-red-500' : 'border-slate-300'}`}
+                            value={guestDetails.email} onChange={e => {
+                                setGuestDetails({...guestDetails, email: e.target.value});
+                                setErrors({...errors, email: ''});
+                            }}
+                            placeholder="e.g. aditya@example.com"
                         />
+                        {errors.email && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.email}</span>}
                         </div>
                         <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Phone</label>
-                        <input type="tel" className="w-full p-3 border border-slate-300 rounded focus:border-gold-500 outline-none bg-white"
-                            value={guestDetails.phone} onChange={e => setGuestDetails({...guestDetails, phone: e.target.value})}
-                            placeholder="+91 98765 43210"
+                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Phone (10-digits)</label>
+                        <input type="tel" className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.phone ? 'border-red-500' : 'border-slate-300'}`}
+                            value={guestDetails.phone} onChange={e => {
+                                setGuestDetails({...guestDetails, phone: e.target.value});
+                                setErrors({...errors, phone: ''});
+                            }}
+                            placeholder="e.g. 9876543210"
+                            maxLength={10}
                         />
+                        {errors.phone && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.phone}</span>}
                         </div>
                     </div>
                 </div>
               </div>
               <div className="flex justify-end pt-8">
                  <button 
-                  disabled={!dates.checkIn || !dates.checkOut || !guestDetails.name}
-                  onClick={() => setStep(3)} 
-                  className="bg-slate-900 text-white px-12 py-4 hover:bg-gold-500 hover:text-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-bold uppercase tracking-widest text-sm shadow-lg rounded-sm"
+                  onClick={handleNextStep} 
+                  className="bg-slate-900 text-white px-12 py-4 hover:bg-gold-500 hover:text-slate-900 transition-colors font-bold uppercase tracking-widest text-sm shadow-lg rounded-sm"
                  >
                    Continue to Payment
                  </button>
@@ -277,15 +356,18 @@ export const BookingPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="mt-8 flex gap-2">
-                           <input 
-                            type="text" 
-                            placeholder="Promo Code" 
-                            className="flex-1 p-3 border border-slate-300 rounded-sm focus:border-gold-500 outline-none uppercase"
-                            value={promoCode}
-                            onChange={e => setPromoCode(e.target.value)}
-                           />
-                           <button onClick={handleApplyPromo} className="bg-slate-800 text-white px-4 font-bold text-xs uppercase tracking-wider hover:bg-slate-900 rounded-sm">Apply</button>
+                        <div className="mt-8">
+                           <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    placeholder="Promo Code" 
+                                    className="flex-1 p-3 border border-slate-300 rounded-sm focus:border-gold-500 outline-none uppercase"
+                                    value={promoCode}
+                                    onChange={e => setPromoCode(e.target.value)}
+                                />
+                                <button onClick={handleApplyPromo} className="bg-slate-800 text-white px-4 font-bold text-xs uppercase tracking-wider hover:bg-slate-900 rounded-sm">Apply</button>
+                           </div>
+                           {errors.promo && <p className="text-red-500 text-xs mt-1">{errors.promo}</p>}
                         </div>
                    </div>
 
@@ -326,7 +408,7 @@ export const BookingPage: React.FC = () => {
                         </div>
                         
                         <p className="text-xs text-slate-400 text-center mt-6">
-                            By proceeding, you agree to LuxeHaven's <span className="underline cursor-pointer">Terms & Conditions</span> and <span className="underline cursor-pointer">Cancellation Policy</span>.
+                            By proceeding, you agree to Manthan Resort's <span className="underline cursor-pointer">Terms & Conditions</span> and <span className="underline cursor-pointer">Cancellation Policy</span>.
                         </p>
                    </div>
                </div>

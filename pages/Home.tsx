@@ -15,6 +15,11 @@ export const Home: React.FC = () => {
   const attractions = getAttractions();
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Date logic for Quick Bar
+  const today = new Date().toISOString().split('T')[0];
+  const [checkIn, setCheckIn] = useState(today);
+  const [checkOut, setCheckOut] = useState('');
 
   // Hero Slider Logic
   useEffect(() => {
@@ -67,7 +72,7 @@ export const Home: React.FC = () => {
                Welcome to Paradise
              </span>
              <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif font-bold text-white mb-6 leading-tight drop-shadow-lg">
-               LuxeHaven
+               Manthan
              </h1>
              <div className="w-24 h-1 bg-gold-500 mx-auto mb-6"></div>
           </motion.div>
@@ -114,11 +119,23 @@ export const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 w-full">
             <div className="border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-6">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Check In</label>
-               <input type="date" className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer" />
+               <input 
+                  type="date" 
+                  min={today}
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer" 
+               />
             </div>
             <div className="border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-6">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Check Out</label>
-               <input type="date" className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer" />
+               <input 
+                  type="date" 
+                  min={checkIn}
+                  value={checkOut}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer" 
+               />
             </div>
             <div className="pb-4 md:pb-0">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Guests</label>
@@ -205,7 +222,7 @@ export const Home: React.FC = () => {
              <div className="max-w-2xl">
                 <span className="text-gold-500 font-bold tracking-wider uppercase text-sm">Explore Goa</span>
                 <h2 className="text-4xl md:text-5xl font-serif font-bold mt-2">Nearby Attractions</h2>
-                <p className="text-slate-400 mt-4 text-lg">Swipe to discover the hidden gems surrounding LuxeHaven.</p>
+                <p className="text-slate-400 mt-4 text-lg">Swipe to discover the hidden gems surrounding Manthan Resort.</p>
              </div>
              <div className="flex gap-4">
                <button onClick={() => scrollAttractions('left')} className="p-4 rounded-full border border-slate-700 hover:bg-gold-500 hover:border-gold-500 hover:text-slate-900 transition-all">
