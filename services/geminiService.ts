@@ -1,17 +1,18 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 import { getRooms, getAttractions, getServices } from "./mockDb";
 
-// Robustly access env var to prevent crash in browser if process is not defined
-const getApiKey = () => {
+// Extremely robust env var access to prevent browser crashes
+const getApiKey = (): string => {
     try {
-        if (typeof process !== 'undefined' && process.env) {
-             // @ts-ignore
+        // Check if 'process' exists globally (Node/Webpack/Parcel)
+        if (typeof process !== 'undefined' && process && process.env) {
+            // @ts-ignore
             return process.env.API_KEY || '';
         }
-        return '';
     } catch (e) {
-        return '';
+        // Ignore any reference errors
     }
+    return '';
 }
 
 const API_KEY = getApiKey();
@@ -21,39 +22,44 @@ let chatSession: Chat | null = null;
 const initializeChat = async () => {
   if (chatSession) return chatSession;
   if (!API_KEY) {
-      console.warn("API Key missing or invalid. Chat features disabled.");
+      console.warn("Gemini API Key missing. Chat features disabled.");
       return null;
   }
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
-  
-  // Context Retrieval
-  const rooms = getRooms().map(r => `${r.title} (₹${r.price})`).join(', ');
-  const attractions = getAttractions().map(a => a.name).join(', ');
-  const services = getServices().map(s => s.name).join(', ');
+  try {
+      const ai = new GoogleGenAI({ apiKey: API_KEY });
+      
+      // Context Retrieval
+      const rooms = getRooms().map(r => `${r.title} (₹${r.price})`).join(', ');
+      const attractions = getAttractions().map(a => a.name).join(', ');
+      const services = getServices().map(s => s.name).join(', ');
 
-  const systemInstruction = `
-    You are 'Aurelius', the AI Concierge of Manthan Resort. 
-    Your tone is polite, sophisticated, and helpful.
-    
-    Here is our current data:
-    Rooms available: ${rooms}.
-    On-site Services: ${services}.
-    Nearby Attractions: ${attractions}.
+      const systemInstruction = `
+        You are 'Aurelius', the AI Concierge of Manthan Resort. 
+        Your tone is polite, sophisticated, and helpful.
+        
+        Here is our current data:
+        Rooms available: ${rooms}.
+        On-site Services: ${services}.
+        Nearby Attractions: ${attractions}.
 
-    Answer guest questions about booking, amenities, and local recommendations. 
-    Keep answers concise (under 100 words) unless detailed planning is asked.
-    If asked to book, guide them to the booking page.
-  `;
+        Answer guest questions about booking, amenities, and local recommendations. 
+        Keep answers concise (under 100 words) unless detailed planning is asked.
+        If asked to book, guide them to the booking page.
+      `;
 
-  chatSession = ai.chats.create({
-    model: 'gemini-2.5-flash',
-    config: {
-      systemInstruction,
-    },
-  });
+      chatSession = ai.chats.create({
+        model: 'gemini-2.5-flash',
+        config: {
+          systemInstruction,
+        },
+      });
 
-  return chatSession;
+      return chatSession;
+  } catch (error) {
+      console.error("Failed to initialize Gemini:", error);
+      return null;
+  }
 };
 
 export const sendMessageToGemini = async (message: string): Promise<string> => {

@@ -17,7 +17,6 @@ export const BookingPage: React.FC = () => {
   const rooms = getRooms();
   const allPromos = getPromoCodes();
   
-  // Helper for dates
   const today = new Date().toISOString().split('T')[0];
   const getTomorrow = (dateStr: string) => {
       const d = new Date(dateStr);
@@ -28,7 +27,7 @@ export const BookingPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   
-  // Initialize dates with defaults
+  // Default dates
   const [dates, setDates] = useState({ checkIn: today, checkOut: getTomorrow(today) });
   const [guestDetails, setGuestDetails] = useState({ name: '', email: '', phone: '', guests: 1 });
   
@@ -45,7 +44,6 @@ export const BookingPage: React.FC = () => {
     const paramCheckOut = params.get('checkOut');
     const paramGuests = params.get('guests');
 
-    // Load Room
     if (roomId) {
       const room = rooms.find(r => r.id === roomId);
       if (room) {
@@ -54,22 +52,16 @@ export const BookingPage: React.FC = () => {
       }
     }
 
-    // Load Dates/Guests from URL if available
     if (paramCheckIn) {
         const validCheckIn = paramCheckIn >= today ? paramCheckIn : today;
         const validCheckOut = paramCheckOut && paramCheckOut > validCheckIn ? paramCheckOut : getTomorrow(validCheckIn);
-        
-        setDates({
-            checkIn: validCheckIn,
-            checkOut: validCheckOut
-        });
+        setDates({ checkIn: validCheckIn, checkOut: validCheckOut });
     }
     if (paramGuests) {
         setGuestDetails(prev => ({ ...prev, guests: parseInt(paramGuests) || 1 }));
     }
   }, [location, rooms]);
 
-  // Handle Date Changes with Auto-checkout logic
   const handleCheckInChange = (date: string) => {
       if (!date) return;
       const nextDayStr = getTomorrow(date);
@@ -77,23 +69,16 @@ export const BookingPage: React.FC = () => {
       setErrors(prev => ({ ...prev, checkIn: '', checkOut: '' }));
   };
 
-  // Validation Logic
   const validateStep2 = () => {
     const newErrors: {[key: string]: string} = {};
     
-    // Check required fields
-    if (!guestDetails.name.trim()) newErrors.name = "Full name is required";
+    if (!guestDetails.name.trim()) newErrors.name = "Name is required";
     if (!guestDetails.email.trim() || !guestDetails.email.includes('@')) newErrors.email = "Valid email is required";
     if (!guestDetails.phone.trim() || guestDetails.phone.length < 10) newErrors.phone = "Valid 10-digit phone required";
     
     if (!dates.checkIn) newErrors.checkIn = "Check-in required";
     if (!dates.checkOut) newErrors.checkOut = "Check-out required";
     
-    if (dates.checkIn && dates.checkOut && dates.checkOut <= dates.checkIn) {
-         // Auto fix instead of error if possible, but alerting logic here
-         newErrors.checkOut = "Check-out must be after check-in";
-    }
-
     if (selectedRoom && (guestDetails.guests > selectedRoom.capacity)) {
         newErrors.guests = `Max capacity is ${selectedRoom.capacity}`;
     }
@@ -103,17 +88,16 @@ export const BookingPage: React.FC = () => {
   };
 
   const handleNextStep = () => {
-    console.log("Next Step Clicked, Current Step:", step);
+    console.log("Next Clicked. Current Step:", step);
     
     if (step === 2) {
-        const isValid = validateStep2();
-        if (isValid) {
+        if (validateStep2()) {
             setStep(3);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            // Force scroll to top to see errors
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            alert("Please correct the errors highlighted in red.");
+            // Add a small delay for the alert to ensure render cycle is done
+            setTimeout(() => alert("Please fix the errors marked in red."), 10);
         }
     } else {
         setStep(prev => prev + 1);
@@ -144,19 +128,6 @@ export const BookingPage: React.FC = () => {
   const discount = appliedPromo ? (subtotal * appliedPromo.discountPercent / 100) : 0;
   const total = subtotal - discount;
 
-  const handleRazorpayPayment = () => {
-    setPaymentMethod('razorpay');
-    const confirmed = window.confirm(`[RAZORPAY SIMULATION]\n\nMerchant: Manthan Resort\nAmount: ₹${total.toLocaleString('en-IN')}\n\nClick OK to simulate successful payment.`);
-    if (confirmed) {
-        completeBooking('razorpay', 'paid');
-    }
-  };
-
-  const handlePayAtHotel = () => {
-      setPaymentMethod('hotel');
-      completeBooking('other', 'unpaid');
-  }
-
   const completeBooking = (method: 'razorpay' | 'other', status: 'paid' | 'unpaid') => {
       const newId = Math.random().toString(36).substr(2, 9).toUpperCase();
       const newBooking: Booking = {
@@ -182,6 +153,17 @@ export const BookingPage: React.FC = () => {
       setBookingId(newId);
       setStep(4);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const handleRazorpayPayment = () => {
+    setPaymentMethod('razorpay');
+    const confirmed = window.confirm(`[RAZORPAY GATEWAY SIMULATION]\n\nProcessing payment of ₹${total.toLocaleString('en-IN')}\n\nClick OK to simulate success.`);
+    if (confirmed) completeBooking('razorpay', 'paid');
+  };
+
+  const handlePayAtHotel = () => {
+      setPaymentMethod('hotel');
+      completeBooking('other', 'unpaid');
   }
 
   const steps = [
@@ -210,10 +192,10 @@ export const BookingPage: React.FC = () => {
           ))}
         </div>
 
-        {/* Main Content Card */}
+        {/* Content */}
         <div className="bg-white shadow-2xl rounded-sm min-h-[600px] flex flex-col border-t-4 border-gold-500 overflow-hidden">
           
-          {/* Step 1: Select Room */}
+          {/* Step 1: Room Selection */}
           {step === 1 && (
              <div className="p-6 md:p-10 animate-fade-in">
                <h2 className="text-3xl font-serif font-bold mb-8 text-center text-slate-900">Choose Your Accommodation</h2>
@@ -227,7 +209,7 @@ export const BookingPage: React.FC = () => {
                    >
                      <div className="w-full lg:w-96 h-64 bg-slate-200 overflow-hidden">
                         <img 
-                          src={room.images?.[0] || 'https://via.placeholder.com/400x300?text=Room+Image'} 
+                          src={room.images?.[0]} 
                           alt={room.title} 
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                         />
@@ -255,7 +237,7 @@ export const BookingPage: React.FC = () => {
              </div>
           )}
 
-          {/* Step 2: Details & Dates */}
+          {/* Step 2: Details */}
           {step === 2 && (
             <div className="p-8 max-w-4xl mx-auto w-full animate-fade-in">
                <div className="flex items-center gap-4 mb-8">
@@ -264,97 +246,109 @@ export const BookingPage: React.FC = () => {
                </div>
               
               <div className="grid md:grid-cols-2 gap-8 mb-8">
+                {/* Dates */}
                 <div className="bg-slate-50 p-6 rounded-lg border border-slate-100">
                     <h3 className="font-bold text-slate-700 uppercase text-xs tracking-wider mb-4 border-b pb-2">Stay Dates</h3>
                     <div className="space-y-4">
                         <div className="relative">
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Check In</label>
-                        <input 
-                            type="date" 
-                            min={today}
-                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white relative z-20 cursor-pointer ${errors.checkIn ? 'border-red-500' : 'border-slate-300'}`} 
-                            value={dates.checkIn}
-                            onChange={e => handleCheckInChange(e.target.value)}
-                        />
-                        {errors.checkIn && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.checkIn}</span>}
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Check In</label>
+                            <input 
+                                type="date" 
+                                min={today}
+                                className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white cursor-pointer ${errors.checkIn ? 'border-red-500' : 'border-slate-300'}`} 
+                                value={dates.checkIn}
+                                onChange={e => handleCheckInChange(e.target.value)}
+                            />
+                            {errors.checkIn && <span className="text-red-500 text-xs mt-1 block">{errors.checkIn}</span>}
                         </div>
                         <div className="relative">
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Check Out</label>
-                        <input 
-                            type="date" 
-                            min={getTomorrow(dates.checkIn || today)}
-                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white relative z-20 cursor-pointer ${errors.checkOut ? 'border-red-500' : 'border-slate-300'}`}
-                            value={dates.checkOut}
-                            onChange={e => {
-                                setDates({...dates, checkOut: e.target.value});
-                                setErrors({...errors, checkOut: ''});
-                            }}
-                        />
-                         {errors.checkOut && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.checkOut}</span>}
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Check Out</label>
+                            <input 
+                                type="date" 
+                                min={getTomorrow(dates.checkIn || today)}
+                                className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white cursor-pointer ${errors.checkOut ? 'border-red-500' : 'border-slate-300'}`}
+                                value={dates.checkOut}
+                                onChange={e => {
+                                    setDates({...dates, checkOut: e.target.value});
+                                    setErrors({...errors, checkOut: ''});
+                                }}
+                            />
+                            {errors.checkOut && <span className="text-red-500 text-xs mt-1 block">{errors.checkOut}</span>}
                         </div>
                         <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Number of Guests</label>
-                        <input 
-                            type="number"
-                            min="1"
-                            max={selectedRoom?.capacity || 4}
-                            className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.guests ? 'border-red-500' : 'border-slate-300'}`}
-                            value={guestDetails.guests}
-                            onChange={e => {
-                                const val = parseInt(e.target.value);
-                                setGuestDetails({...guestDetails, guests: isNaN(val) ? 1 : val});
-                                setErrors({...errors, guests: ''});
-                            }}
-                        />
-                        {errors.guests && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.guests}</span>}
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Guests</label>
+                            <input 
+                                type="number"
+                                min="1"
+                                max={selectedRoom?.capacity || 4}
+                                className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.guests ? 'border-red-500' : 'border-slate-300'}`}
+                                value={guestDetails.guests}
+                                onChange={e => {
+                                    const val = parseInt(e.target.value);
+                                    setGuestDetails({...guestDetails, guests: isNaN(val) ? 1 : val});
+                                    setErrors({...errors, guests: ''});
+                                }}
+                            />
+                            {errors.guests && <span className="text-red-500 text-xs mt-1 block">{errors.guests}</span>}
                         </div>
                     </div>
                 </div>
 
+                {/* Personal */}
                 <div className="bg-slate-50 p-6 rounded-lg border border-slate-100">
                     <h3 className="font-bold text-slate-700 uppercase text-xs tracking-wider mb-4 border-b pb-2">Personal Info</h3>
                     <div className="space-y-4">
                         <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Full Name</label>
-                        <input type="text" className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.name ? 'border-red-500' : 'border-slate-300'}`}
-                            value={guestDetails.name} onChange={e => {
-                                setGuestDetails({...guestDetails, name: e.target.value});
-                                setErrors({...errors, name: ''});
-                            }}
-                            placeholder="e.g. Aditya Kumar"
-                        />
-                         {errors.name && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.name}</span>}
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Full Name</label>
+                            <input 
+                                type="text" 
+                                className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.name ? 'border-red-500' : 'border-slate-300'}`}
+                                value={guestDetails.name} 
+                                onChange={e => {
+                                    setGuestDetails({...guestDetails, name: e.target.value});
+                                    setErrors({...errors, name: ''});
+                                }}
+                                placeholder="e.g. Aditya Kumar"
+                            />
+                            {errors.name && <span className="text-red-500 text-xs mt-1 block">{errors.name}</span>}
                         </div>
                         <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Email</label>
-                        <input type="email" className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.email ? 'border-red-500' : 'border-slate-300'}`}
-                            value={guestDetails.email} onChange={e => {
-                                setGuestDetails({...guestDetails, email: e.target.value});
-                                setErrors({...errors, email: ''});
-                            }}
-                            placeholder="e.g. aditya@example.com"
-                        />
-                        {errors.email && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.email}</span>}
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Email</label>
+                            <input 
+                                type="email" 
+                                className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.email ? 'border-red-500' : 'border-slate-300'}`}
+                                value={guestDetails.email} 
+                                onChange={e => {
+                                    setGuestDetails({...guestDetails, email: e.target.value});
+                                    setErrors({...errors, email: ''});
+                                }}
+                                placeholder="aditya@example.com"
+                            />
+                            {errors.email && <span className="text-red-500 text-xs mt-1 block">{errors.email}</span>}
                         </div>
                         <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Phone (10-digits)</label>
-                        <input type="tel" className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.phone ? 'border-red-500' : 'border-slate-300'}`}
-                            value={guestDetails.phone} onChange={e => {
-                                setGuestDetails({...guestDetails, phone: e.target.value});
-                                setErrors({...errors, phone: ''});
-                            }}
-                            placeholder="e.g. 9876543210"
-                            maxLength={10}
-                        />
-                        {errors.phone && <span className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={10}/> {errors.phone}</span>}
+                            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Phone</label>
+                            <input 
+                                type="tel" 
+                                className={`w-full p-3 border rounded focus:border-gold-500 outline-none bg-white ${errors.phone ? 'border-red-500' : 'border-slate-300'}`}
+                                value={guestDetails.phone} 
+                                onChange={e => {
+                                    setGuestDetails({...guestDetails, phone: e.target.value});
+                                    setErrors({...errors, phone: ''});
+                                }}
+                                placeholder="9876543210"
+                                maxLength={10}
+                            />
+                            {errors.phone && <span className="text-red-500 text-xs mt-1 block">{errors.phone}</span>}
                         </div>
                     </div>
                 </div>
               </div>
-              <div className="flex justify-end pt-8">
+
+              <div className="flex justify-end">
                  <button 
                   onClick={handleNextStep} 
-                  className="bg-slate-900 text-white px-12 py-4 hover:bg-gold-500 hover:text-slate-900 transition-colors font-bold uppercase tracking-widest text-sm shadow-lg rounded-sm"
+                  className="bg-slate-900 text-white px-12 py-4 hover:bg-gold-500 hover:text-slate-900 transition-colors font-bold uppercase tracking-widest text-sm shadow-lg rounded-sm w-full md:w-auto"
                  >
                    Continue to Payment
                  </button>
@@ -371,7 +365,6 @@ export const BookingPage: React.FC = () => {
                </div>
 
                <div className="grid md:grid-cols-12 gap-12">
-                   {/* Summary Section */}
                    <div className="md:col-span-5 bg-slate-50 p-8 border border-slate-200 rounded-sm h-fit">
                         <h3 className="font-serif font-bold text-xl mb-6 border-b border-slate-200 pb-4">Booking Summary</h3>
                         
@@ -422,7 +415,6 @@ export const BookingPage: React.FC = () => {
                         </div>
                    </div>
 
-                   {/* Payment Options */}
                    <div className="md:col-span-7 space-y-6">
                         <div 
                             onClick={handleRazorpayPayment}
@@ -457,16 +449,12 @@ export const BookingPage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        
-                        <p className="text-xs text-slate-400 text-center mt-6">
-                            By proceeding, you agree to Manthan Resort's <span className="underline cursor-pointer">Terms & Conditions</span> and <span className="underline cursor-pointer">Cancellation Policy</span>.
-                        </p>
                    </div>
                </div>
             </div>
           )}
 
-          {/* Step 4: Success / Invoice */}
+          {/* Step 4: Success */}
           {step === 4 && (
             <div className="p-12 flex flex-col items-center justify-center text-center h-full animate-scale-up">
               <motion.div 

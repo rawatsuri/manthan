@@ -7,8 +7,9 @@ export const ServicesPage: React.FC = () => {
   const services = getServices();
 
   const getIcon = (name: string) => {
+    // Safety check: Fallback to Sparkles if the icon name is invalid or missing
     // @ts-ignore
-    const Icon = Icons[name] || Icons.Sparkles;
+    const Icon = (name && Icons[name]) ? Icons[name] : Icons.Sparkles;
     return <Icon size={48} />;
   };
 
