@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { BookingPage } from './pages/Booking';
@@ -14,29 +14,25 @@ import { ScrollToTop } from './components/ScrollToTop';
 
 const App: React.FC = () => {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <ScrollToTop />
       <Routes>
-        {/* Admin Routes - Isolated from public layout */}
-        <Route path="/admin/*" element={<AdminPage />} />
+        {/* Public routes with shared Layout */}
+        <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="rooms" element={<RoomsPage />} />
+          <Route path="dining" element={<DiningPage />} />
+          <Route path="services" element={<ServicesPage />} />
+          <Route path="gallery" element={<GalleryPage />} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route path="booking" element={<BookingPage />} />
+        </Route>
 
-        {/* Public Routes - Wrapped in Layout */}
-        <Route path="*" element={
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/booking" element={<BookingPage />} />
-              <Route path="/rooms" element={<RoomsPage />} />
-              <Route path="/dining" element={<DiningPage />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/gallery" element={<GalleryPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-            </Routes>
-          </Layout>
-        } />
+        {/* Admin routes - separate layout handled inside AdminPage */}
+        <Route path="admin/*" element={<AdminPage />} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

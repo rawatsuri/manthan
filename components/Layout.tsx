@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, Shield, MessageSquare, Send, Hotel, Utensils } from 'lucide-react';
+import { Link, Outlet } from 'react-router-dom';
+import { Menu, X, Shield, MessageSquare, Send, Hotel, Utensils } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { sendMessageToGemini } from '../services/geminiService';
-
-interface LayoutProps {
-  children: React.ReactNode;
-}
 
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,8 +55,8 @@ const ChatWidget = () => {
               {messages.map((m, i) => (
                 <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                    m.role === 'user' 
-                      ? 'bg-gold-500 text-white rounded-br-none' 
+                    m.role === 'user'
+                      ? 'bg-gold-500 text-white rounded-br-none'
                       : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm'
                   }`}>
                     {m.text}
@@ -84,7 +80,7 @@ const ChatWidget = () => {
                 placeholder="Ask about rooms, dining..."
                 className="flex-1 bg-slate-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-gold-400 outline-none"
               />
-              <button 
+              <button
                 onClick={handleSend}
                 disabled={loading}
                 className="bg-slate-900 text-white p-2 rounded-full hover:bg-slate-800 transition-colors disabled:opacity-50"
@@ -105,14 +101,8 @@ const ChatWidget = () => {
   );
 };
 
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+export const Layout: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
-  const isAdmin = location.pathname.startsWith('/admin');
-
-  if (isAdmin) {
-    return <>{children}</>;
-  }
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-slate-900">
@@ -178,7 +168,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </nav>
 
       <main className="flex-grow pt-24">
-        {children}
+        <Outlet />
       </main>
 
       <footer className="bg-slate-950 text-slate-400 py-16 border-t-4 border-gold-500">
@@ -225,7 +215,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <span>Made with ❤️ in India</span>
         </div>
       </footer>
-      
+
       <ChatWidget />
     </div>
   );
