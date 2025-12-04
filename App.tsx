@@ -19,7 +19,7 @@ const App: React.FC = () => {
       <Routes>
         {/* Admin Routes - Isolated from public layout */}
         <Route path="/admin/*" element={<AdminPage />} />
-        
+
         {/* Public Routes - Wrapped in Layout */}
         <Route path="*" element={
           <Layout>

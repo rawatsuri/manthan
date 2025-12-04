@@ -30,7 +30,7 @@ export const Home: React.FC = () => {
   const attractions = getAttractions();
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // Date logic for Quick Bar
   const today = new Date().toISOString().split('T')[0];
   const [checkIn, setCheckIn] = useState(today);
@@ -70,7 +70,7 @@ export const Home: React.FC = () => {
       {/* Dynamic Hero Section */}
       <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
         <AnimatePresence mode="popLayout">
-          <motion.div 
+          <motion.div
             key={currentHeroIndex}
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -78,15 +78,15 @@ export const Home: React.FC = () => {
             transition={{ duration: 1.5 }}
             className="absolute inset-0 z-0"
           >
-            <img 
-              src={HERO_IMAGES[currentHeroIndex]} 
-              alt="Luxury Hotel" 
+            <img
+              src={HERO_IMAGES[currentHeroIndex]}
+              alt="Luxury Hotel"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-slate-900/90" />
           </motion.div>
         </AnimatePresence>
-        
+
         <div className="relative z-10 px-4 max-w-5xl mx-auto space-y-8 mt-16">
           <motion.div
              initial={{ y: 50, opacity: 0 }}
@@ -102,7 +102,7 @@ export const Home: React.FC = () => {
              <div className="w-24 h-1 bg-gold-500 mx-auto mb-6"></div>
           </motion.div>
 
-          <motion.p 
+          <motion.p
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1, delay: 0.3 }}
@@ -110,15 +110,15 @@ export const Home: React.FC = () => {
           >
             "Where Indian hospitality meets world-class luxury."
           </motion.p>
-          
+
           <motion.div
              initial={{ y: 50, opacity: 0 }}
              animate={{ y: 0, opacity: 1 }}
              transition={{ duration: 1, delay: 0.6 }}
              className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 pt-8"
           >
-            <Link 
-              to="/booking" 
+            <Link
+              to="/booking"
               className="bg-gold-500 text-slate-900 px-12 py-4 rounded-sm font-bold text-lg hover:bg-white transition-all shadow-xl uppercase tracking-widest border border-gold-500"
             >
               Book Now
@@ -129,7 +129,7 @@ export const Home: React.FC = () => {
         {/* Slider Indicators */}
         <div className="absolute bottom-32 md:bottom-12 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
           {HERO_IMAGES.map((_, idx) => (
-            <button 
+            <button
               key={idx}
               onClick={() => setCurrentHeroIndex(idx)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentHeroIndex ? 'bg-gold-500 w-8' : 'bg-white/50 hover:bg-white'}`}
@@ -144,29 +144,29 @@ export const Home: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1 w-full">
             <div className="border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-6 relative">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Check In</label>
-               <input 
-                  type="date" 
+               <input
+                  type="date"
                   min={today}
                   value={checkIn}
                   onChange={(e) => setCheckIn(e.target.value)}
-                  className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer" 
+                  className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer"
                   style={{ position: 'relative', zIndex: 60 }}
                />
             </div>
             <div className="border-b md:border-b-0 md:border-r border-slate-200 pb-4 md:pb-0 md:pr-6 relative">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Check Out</label>
-               <input 
-                  type="date" 
+               <input
+                  type="date"
                   min={checkIn}
                   value={checkOut}
                   onChange={(e) => setCheckOut(e.target.value)}
-                  className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer" 
+                  className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent cursor-pointer"
                   style={{ position: 'relative', zIndex: 60 }}
                />
             </div>
             <div className="pb-4 md:pb-0">
                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Guests</label>
-               <select 
+               <select
                   value={guests}
                   onChange={e => setGuests(parseInt(e.target.value))}
                   className="w-full outline-none font-serif text-xl text-slate-800 bg-transparent border-none p-0 focus:ring-0 cursor-pointer"
@@ -178,7 +178,7 @@ export const Home: React.FC = () => {
                </select>
             </div>
           </div>
-          <Link 
+          <Link
             to={`/booking?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`}
             className="w-full lg:w-auto bg-slate-900 text-gold-500 px-12 py-5 hover:bg-slate-800 transition-colors text-center font-bold uppercase tracking-widest text-sm whitespace-nowrap shadow-lg"
           >
@@ -195,8 +195,8 @@ export const Home: React.FC = () => {
                   <span className="text-gold-600 font-bold tracking-[0.2em] uppercase text-xs">Our Story</span>
                   <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mt-3 mb-6">Born from a Vision</h2>
                   <p className="text-slate-600 leading-relaxed text-lg mb-6">
-                    Manthan Resort isn't just a hotel; it's a culmination of a lifelong dream shared by two friends, 
-                    Arjun and Vikram. Their journey began twenty years ago with a simple promise: to build a sanctuary 
+                    Manthan Resort isn't just a hotel; it's a culmination of a lifelong dream shared by two friends,
+                    Arjun and Vikram. Their journey began twenty years ago with a simple promise: to build a sanctuary
                     that blends the warmth of Indian hospitality with the grandeur of world-class luxury.
                   </p>
                   <p className="text-slate-600 leading-relaxed text-lg">
@@ -237,7 +237,7 @@ export const Home: React.FC = () => {
                 <span className="text-gold-500 font-bold tracking-[0.2em] uppercase text-xs">Experience More</span>
                 <h2 className="text-4xl md:text-5xl font-serif font-bold mt-3">Unmatched Amenities</h2>
              </div>
-             
+
              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                  <div className="p-6 border border-slate-800 rounded-lg hover:border-gold-500 transition-colors group">
                     <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gold-500 group-hover:bg-gold-500 group-hover:text-slate-900 transition-colors">
@@ -270,14 +270,14 @@ export const Home: React.FC = () => {
              </div>
          </div>
       </section>
-      
+
       {/* Video Parallax Section */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-         <video 
-           autoPlay 
-           loop 
-           muted 
-           playsInline 
+         <video
+           autoPlay
+           loop
+           muted
+           playsInline
            className="absolute inset-0 w-full h-full object-cover"
            poster="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2000"
          >
@@ -303,7 +303,7 @@ export const Home: React.FC = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             {featuredRooms.map((room, i) => (
-              <motion.div 
+              <motion.div
                 key={room.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -315,7 +315,7 @@ export const Home: React.FC = () => {
                 <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
                    <img src={room.images[0]} alt={room.title} className="w-full h-full object-cover" />
                 </div>
-                
+
                 {/* Overlay Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-90 transition-opacity" />
 
@@ -330,7 +330,7 @@ export const Home: React.FC = () => {
                         <span className="text-xl font-bold">₹{room.price.toLocaleString('en-IN')}</span>
                         <span className="text-xs text-slate-300 font-light">/ night</span>
                      </div>
-                     
+
                      <p className="text-slate-300 text-sm mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2">
                        {room.description}
                      </p>
@@ -343,7 +343,7 @@ export const Home: React.FC = () => {
               </motion.div>
             ))}
           </div>
-          
+
           <div className="text-center mt-12">
              <Link to="/rooms" className="inline-block border border-slate-900 text-slate-900 px-10 py-3 font-bold uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all text-sm">
                 View All Accommodations
@@ -373,9 +373,9 @@ export const Home: React.FC = () => {
                </button>
              </div>
           </div>
-          
+
           {/* Scroll Container */}
-          <div 
+          <div
             ref={scrollContainerRef}
             className="flex gap-8 overflow-x-auto pb-8 snap-x snap-mandatory hide-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -385,7 +385,7 @@ export const Home: React.FC = () => {
                   <div className="group relative h-[450px] rounded-xl overflow-hidden cursor-pointer shadow-xl">
                     <img src={att.image} alt={att.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
-                    
+
                     <div className="absolute bottom-0 left-0 p-8 w-full">
                        <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block border border-white/30">
                          {att.category}
