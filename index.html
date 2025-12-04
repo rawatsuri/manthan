@@ -4,79 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manthan Resort</title>
-    <script>
-      // Suppress the Tailwind CDN warning in production environments
-      const originalWarn = console.warn;
-      console.warn = function(...args) {
-        if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
-        originalWarn.apply(console, args);
-      };
-    </script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              gold: {
-                50: '#FFFAEB',
-                100: '#FEF3C7',
-                200: '#FDE68A',
-                300: '#FCD34D',
-                400: '#FACC15',
-                500: '#D4AF37', // Refined gold color
-                600: '#CA8A04',
-                700: '#A16207',
-                800: '#854D0E',
-                900: '#713F12',
-              },
-              slate: {
-                850: '#1e293b',
-                900: '#0f172a',
-                950: '#020617',
-              }
-            },
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Playfair Display', 'serif'],
-            },
-          },
-        },
-      };
-    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-      html, body, #root {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'Playfair Display', serif;
-      }
-      /* Custom scrollbar for admin panel */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-      .razorpay-checkout-frame {
-          height: 100% !important;
-      }
-    </style>
-</head>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

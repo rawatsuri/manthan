@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './src/index.css';
 import App from './App';
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -22,8 +23,8 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
         <div style={{ padding: '2rem', textAlign: 'center', fontFamily: 'sans-serif' }}>
           <h1 style={{ color: '#ef4444' }}>Something went wrong.</h1>
           <p style={{ color: '#64748b' }}>We apologize for the inconvenience. Please refresh the page.</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             style={{ marginTop: '1rem', padding: '0.5rem 1rem', background: '#0f172a', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
           >
             Reload Page

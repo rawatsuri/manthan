@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* Custom theme via CSS variables (Tailwind v4 way) */
+@theme {
+  --color-gold-50: #FFFAEB;
+  --color-gold-100: #FEF3C7;
+  --color-gold-200: #FDE68A;
+  --color-gold-300: #FCD34D;
+  --color-gold-400: #FACC15;
+  --color-gold-500: #D4AF37;
+  --color-gold-600: #CA8A04;
+  --color-gold-700: #A16207;
+  --color-gold-800: #854D0E;
+  --color-gold-900: #713F12;
+
+  --color-slate-850: #1e293b;
+  --color-slate-950: #020617;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.razorpay-checkout-frame {
+  height: 100% !important;
+}
+
+/* Hide scrollbar for attractions carousel */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
